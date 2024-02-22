@@ -25,8 +25,6 @@ ground_truth_responses = [
     # Add ground truth responses corresponding to evaluation questions
 ]
 
-# Calculate evaluation metrics (e.g., BLEU score, ROUGE score)
-# You can use libraries like NLTK or rouge_score for this purpose
 
 # Example BLEU score calculation using NLTK
 from nltk.translate.bleu_score import corpus_bleu

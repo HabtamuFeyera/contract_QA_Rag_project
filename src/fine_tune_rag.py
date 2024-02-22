@@ -66,7 +66,6 @@ loaders = [
     PyPDFLoader("/home/habte/Downloads/Robinson Q&A.docx.pdf")
 ]
 
-# Example labels (replace with your actual labels)
 labels = [0, 1, 2, 3]
 
 # Create an instance of the ContractDataset

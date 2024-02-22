@@ -22,7 +22,7 @@ class QADataset(Dataset):
 # Load the RAG tokenizer
 tokenizer = RagTokenizer.from_pretrained("facebook/rag-token-base")
 
-# Define the training data (replace with your own dataset)
+# Define the training data
 questions = ["What is the capital of France?", "Who wrote Hamlet?"]
 documents = ["Paris is the capital of France.", "Hamlet is a play written by William Shakespeare."]
 relevant_document_indices = [0, 1]

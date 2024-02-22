@@ -1,0 +1,41 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contract Assistant</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Contract Assistant</h1>
+        <form id="queryForm">
+            <div class="form-group">
+                <label for="query">Enter your query:</label>
+                <input type="text" class="form-control" id="query" name="query" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Ask</button>
+        </form>
+        <div id="response"></div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $('#queryForm').submit(function(e){
+                e.preventDefault();
+                var query = $('#query').val();
+                $.ajax({
+                    url: '/ask',
+                    method: 'POST',
+                    data: {query: query},
+                    success: function(response){
+                        $('#response').html('<p>' + response + '</p>');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
