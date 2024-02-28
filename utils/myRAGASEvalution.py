@@ -7,6 +7,7 @@ from langchain.vectorstores import Chroma
 from langchain.llms import OpenAI
 from langchain.chains import ConversationalRetrievalChain
 from langchain_community.chat_models import ChatOpenAI
+from langchain.memory import ConversationBufferMemory
 
 class RAGEvaluation:
     def __init__(self, openai_key, pdf_paths):
