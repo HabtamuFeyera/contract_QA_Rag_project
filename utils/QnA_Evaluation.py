@@ -1,5 +1,6 @@
 import os
 import time
+import getpass
 from langchain.document_loaders import PyPDFLoader
 from langchain.text_splitter import TokenTextSplitter
 from langchain.embeddings.openai import OpenAIEmbeddings
@@ -8,6 +9,9 @@ from langchain.llms import OpenAI
 from langchain.chains import ConversationalRetrievalChain
 from langchain_community.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
+
+# Set OpenAI API key
+os.environ["OPENAI_API_KEY"] = getpass.getpass()
 
 class LangChainEvaluation:
     def __init__(self):
@@ -34,9 +38,9 @@ class LangChainEvaluation:
             self.total_errors += 1
 
         # For demonstration purposes, scores are randomly generated
-        self.total_consistency_score += 0.8  # Example consistency score
+        self.total_consistency_score += 0.9  # Example consistency score
         self.total_novelty_score += 0.7  # Example novelty score
-        self.total_user_satisfaction_score += 0.9  # Example user satisfaction score
+        self.total_user_satisfaction_score += 0.6  # Example user satisfaction score
 
     def generate_response(self, query):
         # Implement response generation logic here
@@ -100,8 +104,8 @@ memory = ConversationBufferMemory(memory_key="chat_history", return_messages=Tru
 chat_qa = ConversationalRetrievalChain.from_llm(chat_model, vect_db.as_retriever(), memory=memory)
 
 # Example queries and expected responses
-queries = ["What is the contract about?", "Can you explain the terms?", "What is the payment schedule?"]
-expected_responses = ["The contract is about...", "The terms include...", "The payment schedule is..."]
+queries = ["How much is the escrow amount?", "Is any of the Sellers bound by a non-competition covenant after the Closing?", "What is the termination notice?"]
+expected_responses = ["The escrow amount is equal to $1,000,000", "No", "According to section 4:14 days..."]
 
 # Process queries and evaluate LangChain system
 for query, expected_response in zip(queries, expected_responses):

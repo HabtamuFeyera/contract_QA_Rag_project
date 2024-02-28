@@ -7,7 +7,6 @@ from src.chat_model import ChatModel
 
 # Set OpenAI API key
 import getpass
-import os
 
 os.environ["OPENAI_API_KEY"] = getpass.getpass()
 if __name__ == "__main__":
@@ -19,7 +18,7 @@ if __name__ == "__main__":
         "/home/habte/Downloads/Robinson Q&A.docx.pdf"
     ]
 
-    # Set your OpenAI API key
+    
     openai_api_key = os.environ.get('OPENAI_API_KEY')
 
     # Initialize PDF loader
@@ -40,7 +39,7 @@ if __name__ == "__main__":
     while True:
         query = input('You: ')  # Prompt the user to input a question
 
-        if query.lower() == 'done':  # Check if the user wants to end the conversation
+        if query.lower() == 'done':  
             break
 
         response = chat_qa({"question": query, "chat_history": chat_history})  # Retrieve response

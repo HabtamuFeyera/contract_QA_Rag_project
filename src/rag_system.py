@@ -30,7 +30,7 @@ if __name__ == "__main__":
         "/home/habte/Downloads/Robinson Q&A.docx.pdf"
     ]
 
-    # Set your OpenAI API key
+   
     openai_api_key = os.environ.get('OPENAI_API_KEY')
 
     # Initialize RAG system

@@ -1,5 +1,11 @@
 import os
 import time
+import getpass
+from langchain_community.chat_models import ChatOpenAI
+from langchain.memory import ConversationBufferMemory
+import os
+import time
+import getpass
 from langchain.document_loaders import PyPDFLoader
 from langchain.text_splitter import TokenTextSplitter
 from langchain.embeddings.openai import OpenAIEmbeddings
@@ -9,11 +15,12 @@ from langchain.chains import ConversationalRetrievalChain
 from langchain_community.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 
+
 class RAGEvaluation:
     def __init__(self, openai_key, pdf_paths):
         self.chat_model = ChatOpenAI(openai_api_key=openai_key, model_name="gpt-3.5-turbo")
         self.memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
-        self.chat_qa = ConversationalRetrievalChain.from_llm(self.chat_model, self.vect_db.as_retriever(), memory=self.memory)
+        # Initialize other necessary components (e.g., vector stores) if required
         self.total_queries = 0
         self.correct_responses = 0
         self.total_response_time = 0
@@ -31,34 +38,37 @@ class RAGEvaluation:
             if is_correct:
                 self.correct_responses += 1
 
-        accuracy = self.correct_responses / self.total_queries
-        avg_response_time = self.total_response_time / self.total_queries
+        accuracy = self.correct_responses / self.total_queries if self.total_queries > 0 else 0
+        avg_response_time = self.total_response_time / self.total_queries if self.total_queries > 0 else 0
 
         return accuracy, avg_response_time
 
     def generate_response(self, query):
-        response = self.chat_qa.query(query)
+        response = self.chat_model.query(query)
         return response["text"]
 
     def compare_responses(self, response1, response2):
         return response1.strip().lower() == response2.strip().lower()
 
-# Initialize RAG evaluation
-openai_key = os.environ.get('OPENAI_API_KEY')
-pdf_paths = [
-    "/home/habte/Downloads/Raptor Contract.docx.pdf",
-    "/home/habte/Downloads/Raptor Q&A2.docx.pdf",
-    "/home/habte/Downloads/Robinson Advisory.docx.pdf",
-    "/home/habte/Downloads/Robinson Q&A.docx.pdf"
-]
+def main():
+    # Set OpenAI API key
+    openai_key = getpass.getpass("Enter your OpenAI API key: ")
 
-rag_eval = RAGEvaluation(openai_key, pdf_paths)
+    pdf_paths = [
+        "/home/habte/Downloads/Raptor Contract.docx.pdf",
+        "/home/habte/Downloads/Raptor Q&A2.docx.pdf",
+        "/home/habte/Downloads/Robinson Advisory.docx.pdf",
+        "/home/habte/Downloads/Robinson Q&A.docx.pdf"
+    ]
 
-# Example queries and expected responses
-queries = ["What is the contract about?", "Can you explain the terms?", "What is the payment schedule?"]
-expected_responses = ["The contract is about...", "The terms include...", "The payment schedule is..."]
+    rag_eval = RAGEvaluation(openai_key, pdf_paths)
 
-# Process queries and evaluate RAG system
-accuracy, avg_response_time = rag_eval.evaluate(queries, expected_responses)
-print(f"Accuracy: {accuracy}")
-print(f"Avg. Response Time: {avg_response_time} seconds")
+    queries = ["What is the contract about?", "Can you explain the terms?", "What is the payment schedule?"]
+    expected_responses = ["The contract is about...", "The terms include...", "The payment schedule is..."]
+
+    accuracy, avg_response_time = rag_eval.evaluate(queries, expected_responses)
+    print(f"Accuracy: {accuracy}")
+    print(f"Avg. Response Time: {avg_response_time} seconds")
+
+if __name__ == "__main__":
+    main()

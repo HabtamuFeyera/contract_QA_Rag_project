@@ -1,20 +1,21 @@
 import os
 import time
+import getpass
 from ragas.metrics import faithfulness, answer_relevancy, context_relevancy, context_recall
 from ragas.langchain import RagasEvaluatorChain
-from langchain.document_loaders import PyPDFLoader
-from langchain.text_splitter import TokenTextSplitter
 from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.vectorstores import Chroma
-from langchain.llms import OpenAI
 from langchain.chains import ConversationalRetrievalChain
 from langchain_community.chat_models import ChatOpenAI
+from langchain.memory import ConversationBufferMemory
+
+# Set OpenAI API key
+os.environ["OPENAI_API_KEY"] = getpass.getpass()
 
 class RAGEvaluation:
-    def __init__(self, openai_key, pdf_paths):
+    def __init__(self, openai_key):
         self.chat_model = ChatOpenAI(openai_api_key=openai_key, model_name="gpt-3.5-turbo")
         self.memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
-        self.chat_qa = ConversationalRetrievalChain.from_llm(self.chat_model, self.vect_db.as_retriever(), memory=self.memory)
+        self.chat_qa = ConversationalRetrievalChain.from_llm(self.chat_model, memory=self.memory)
         self.evaluator_chain = RagasEvaluatorChain()
         self.total_queries = 0
         self.correct_responses = 0
@@ -56,14 +57,8 @@ class RAGEvaluation:
 def main():
     # Initialize RAG evaluation
     openai_key = os.environ.get('OPENAI_API_KEY')
-    pdf_paths = [
-        "/home/habte/Downloads/Raptor Contract.docx.pdf",
-        "/home/habte/Downloads/Raptor Q&A2.docx.pdf",
-        "/home/habte/Downloads/Robinson Advisory.docx.pdf",
-        "/home/habte/Downloads/Robinson Q&A.docx.pdf"
-    ]
     
-    rag_eval = RAGEvaluation(openai_key, pdf_paths)
+    rag_eval = RAGEvaluation(openai_key)
     
     # Example queries and expected responses
     queries = ["What is the contract about?", "Can you explain the terms?", "What is the payment schedule?"]
@@ -78,47 +73,6 @@ def main():
     results = rag_eval.evaluate_with_ragas_metrics(queries, expected_responses)
     for result in results:
         print(result)
-
-    # Define benchmarks or standards for comparison
-    benchmark_accuracy = 0.8  # Example benchmark accuracy
-    benchmark_response_time = 3.0  # Example benchmark response time (in seconds)
-    benchmark_faithfulness = 0.9  # Example benchmark faithfulness score
-    benchmark_answer_relevancy = 0.85  # Example benchmark answer relevancy score
-    benchmark_context_relevancy = 0.8  # Example benchmark context relevancy score
-    benchmark_context_recall = 0.75  # Example benchmark context recall score
-    
-    # Compare with benchmarks
-    if accuracy >= benchmark_accuracy:
-        print("Accuracy meets benchmark.")
-    else:
-        print("Accuracy does not meet benchmark.")
-    
-    if avg_response_time <= benchmark_response_time:
-        print("Response time meets benchmark.")
-    else:
-        print("Response time does not meet benchmark.")
-    
-    # Check Ragas metrics against benchmarks
-    for result in results:
-        if result["faithfulness"] >= benchmark_faithfulness:
-            print("Faithfulness meets benchmark.")
-        else:
-            print("Faithfulness does not meet benchmark.")
-        
-        if result["answer_relevancy"] >= benchmark_answer_relevancy:
-            print("Answer relevancy meets benchmark.")
-        else:
-            print("Answer relevancy does not meet benchmark.")
-        
-        if result["context_relevancy"] >= benchmark_context_relevancy:
-            print("Context relevancy meets benchmark.")
-        else:
-            print("Context relevancy does not meet benchmark.")
-        
-        if result["context_recall"] >= benchmark_context_recall:
-            print("Context recall meets benchmark.")
-        else:
-            print("Context recall does not meet benchmark.")
 
 if __name__ == "__main__":
     main()
