@@ -3,17 +3,6 @@ import time
 import getpass
 from langchain_community.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
-import os
-import time
-import getpass
-from langchain.document_loaders import PyPDFLoader
-from langchain.text_splitter import TokenTextSplitter
-from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.vectorstores import Chroma
-from langchain.llms import OpenAI
-from langchain.chains import ConversationalRetrievalChain
-from langchain_community.chat_models import ChatOpenAI
-from langchain.memory import ConversationBufferMemory
 
 
 class RAGEvaluation:

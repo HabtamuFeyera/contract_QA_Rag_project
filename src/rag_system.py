@@ -1,7 +1,13 @@
 import os
+import getpass
 from pdf_loader import PDFLoader
 from vector_embedding import VectorEmbedding
 from chat_model import ChatModel
+
+# Prompt user to enter OpenAI API key
+os.environ["OPENAI_API_KEY"] = getpass.getpass(prompt="Enter your OpenAI API key: ")
+
+openai_api_key = os.environ.get('OPENAI_API_KEY')
 
 class RAGSystem:
     def __init__(self, pdf_paths, openai_api_key):
@@ -29,9 +35,6 @@ if __name__ == "__main__":
         "/home/habte/Downloads/Robinson Advisory.docx.pdf",
         "/home/habte/Downloads/Robinson Q&A.docx.pdf"
     ]
-
-   
-    openai_api_key = os.environ.get('OPENAI_API_KEY')
 
     # Initialize RAG system
     rag_system = RAGSystem(pdf_paths, openai_api_key)
