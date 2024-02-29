@@ -1,83 +1,92 @@
 import os
+import getpass
 import time
-from ragas.metrics import faithfulness, answer_relevancy, context_relevancy, context_recall
-from ragas.langchain import RagasEvaluatorChain
-from langchain.document_loaders import PyPDFLoader
-from langchain.text_splitter import TokenTextSplitter
-from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.vectorstores import Chroma
-from langchain.llms import OpenAI
-from langchain.chains import ConversationalRetrievalChain
-from langchain_community.chat_models import ChatOpenAI
+from pdf_loader import PDFLoader
+from vector_embedding import VectorEmbedding
+from chat_model import ChatModel
+from sklearn.metrics.pairwise import cosine_similarity
 
 class RAGEvaluation:
-    def __init__(self, openai_key, pdf_paths):
-        self.chat_model = ChatOpenAI(openai_api_key=openai_key, model_name="gpt-3.5-turbo")
-        self.memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
-        self.chat_qa = ConversationalRetrievalChain.from_llm(self.chat_model, self.vect_db.as_retriever(), memory=self.memory)
-        self.evaluator_chain = RagasEvaluatorChain()
-        self.total_queries = 0
-        self.correct_responses = 0
-        self.total_response_time = 0
+    def __init__(self, pdf_paths, openai_api_key):
+        self.rag_system = self._initialize_rag_system(pdf_paths, openai_api_key)
 
-    def evaluate(self, queries, expected_responses):
-        for query, expected_response in zip(queries, expected_responses):
+    def _initialize_rag_system(self, pdf_paths, openai_api_key):
+        # Initialize PDF loader
+        pdf_loader = PDFLoader(pdf_paths)
+        split_data = pdf_loader.load_and_split_documents()
+
+        # Initialize vector embedding
+        vector_embedding = VectorEmbedding(openai_api_key)
+        vect_db = vector_embedding.create_vector_store(split_data)
+
+        # Initialize chat model
+        chat_model = ChatModel(openai_api_key)
+        chat_qa = chat_model.create_chat_qa(vect_db)
+
+        return chat_qa
+
+    def evaluate(self, queries, ground_truth):
+        total_queries = len(queries)
+        total_relevance = 0
+        total_response_time = 0
+
+        for query, expected_answer in zip(queries, ground_truth):
             start_time = time.time()
-            generated_response = self.generate_response(query)
+            response = self.rag_system({"question": query})["answer"]
             end_time = time.time()
+            total_response_time += end_time - start_time
 
-            self.total_queries += 1
-            self.total_response_time += end_time - start_time
+            # Calculate relevance
+            relevance = self.calculate_relevance(response, expected_answer)
+            total_relevance += relevance
 
-            is_correct = self.compare_responses(generated_response, expected_response)
-            if is_correct:
-                self.correct_responses += 1
+        # Calculate average relevance and response time
+        avg_relevance = total_relevance / total_queries
+        avg_response_time = total_response_time / total_queries
 
-        accuracy = self.correct_responses / self.total_queries
-        avg_response_time = self.total_response_time / self.total_queries
+        return avg_relevance, avg_response_time
 
-        return accuracy, avg_response_time
+    def calculate_relevance(self, response, expected_answer):
+        # Convert response and expected answer to embeddings
+        response_embedding = self.rag_system({"question": response})["vector"]
+        expected_answer_embedding = self.rag_system({"question": expected_answer})["vector"]
 
-    def generate_response(self, query):
-        response = self.chat_qa.query(query)
-        return response["text"]
+        # Calculate cosine similarity between embeddings
+        similarity = cosine_similarity([response_embedding], [expected_answer_embedding])[0][0]
 
-    def compare_responses(self, response1, response2):
-        return response1.strip().lower() == response2.strip().lower()
+        return similarity
 
-    def evaluate_with_ragas_metrics(self, queries, expected_responses):
-        results = []
-        for query, expected_response in zip(queries, expected_responses):
-            generated_response = self.generate_response(query)
-            result = self.evaluator_chain.evaluate(generated_response, expected_response)
-            results.append(result)
-        return results
+# Example usage
+if __name__ == "__main__":
+    # Prompt user to enter OpenAI API key
+    os.environ["OPENAI_API_KEY"] = getpass.getpass(prompt="Enter your OpenAI API key: ")
+    openai_api_key = os.environ.get('OPENAI_API_KEY')
 
-def main():
-    # Initialize RAG evaluation
-    openai_key = os.environ.get('OPENAI_API_KEY')
+    # Define paths to PDF documents
     pdf_paths = [
         "/home/habte/Downloads/Raptor Contract.docx.pdf",
         "/home/habte/Downloads/Raptor Q&A2.docx.pdf",
         "/home/habte/Downloads/Robinson Advisory.docx.pdf",
         "/home/habte/Downloads/Robinson Q&A.docx.pdf"
     ]
-    
-    rag_eval = RAGEvaluation(openai_key, pdf_paths)
-    
-    # Example queries and expected responses
-    queries = ["What is the contract about?", "Can you explain the terms?", "What is the payment schedule?"]
-    expected_responses = ["The contract is about...", "The terms include...", "The payment schedule is..."]
-    
-    # Process queries and evaluate RAG system
-    accuracy, avg_response_time = rag_eval.evaluate(queries, expected_responses)
-    print(f"Accuracy: {accuracy}")
-    print(f"Avg. Response Time: {avg_response_time} seconds")
-    
-    # Evaluate with Ragas metrics
-    results = rag_eval.evaluate_with_ragas_metrics(queries, expected_responses)
-    for result in results:
-        print(result)
 
-if __name__ == "__main__":
-    main()
+    # Create RAGEvaluation instance
+    rag_evaluation = RAGEvaluation(pdf_paths, openai_api_key)
+
+    # Define queries and ground truth answers for evaluation
+    queries = [
+        "How much is the escrow amount?",
+        "Is any of the Sellers bound by a non-competition covenant after the Closing?",
+        "What is the termination notice?"
+    ]
+    ground_truth = [
+        "The escrow amount is equal to $1,000,000",
+        "No",
+        "According to section 4:14 days..."
+    ]
+
+    # Evaluate RAG system
+    avg_relevance, avg_response_time = rag_evaluation.evaluate(queries, ground_truth)
+
+    print("Average Relevance:", avg_relevance)
+    print("Average Response Time:", avg_response_time)
