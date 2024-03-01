@@ -1,14 +1,12 @@
+import sys
+import os
+import getpass
 from flask import Flask, render_template, request, jsonify
 from src.pdf_loader import PDFLoader
 from src.vector_embedding import VectorEmbedding
 from src.chat_model import ChatModel
-import os
-import getpass
-import sys
-sys.path.append('/home/habte/contract_QA_Rag_project/src')
 
-
-app = Flask(__name__)
+app = Flask(__name__, template_folder="/home/habte/contract_QA_Rag_project/frontend", static_folder="/home/habte/contract_QA_Rag_project/frontend")
 
 # Define paths to PDF documents
 pdf_paths = [
@@ -36,10 +34,12 @@ vect_db = vector_embedding.create_vector_store(split_data)
 chat_model = ChatModel(openai_api_key)
 chat_qa = chat_model.create_chat_qa(vect_db)
 
+# Serve the index.html file
 @app.route('/')
 def index():
     return render_template('index.html')
 
+# Handle the POST request for asking questions
 @app.route('/ask', methods=['POST'])
 def ask_question():
     question = request.form['question']
@@ -47,4 +47,7 @@ def ask_question():
     return jsonify({"response": response["answer"]})
 
 if __name__ == '__main__':
+    # Run the Flask app
     app.run(debug=True)
+
+
