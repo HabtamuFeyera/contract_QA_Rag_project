@@ -19,7 +19,6 @@ pdf_paths = [
 # Prompt user to enter OpenAI API key
 os.environ["OPENAI_API_KEY"] = getpass.getpass(prompt="Enter your OpenAI API key: ")
 
-# Set your OpenAI API key
 openai_api_key = os.environ.get('OPENAI_API_KEY')
 
 # Initialize PDF loader
