@@ -30,8 +30,4 @@ To get started with the Autonomous Contract Lawyer, follow these steps:
 Check out the [demo](https://medium.com/@habtamufeyer02/contract-advisor-rag-towards-building-a-high-precision-legal-expert-llms-app-b0826b10058f) of our Autonomous Contract Lawyer system in action!
 
 
-## Contributing
-We welcome contributions from the community to enhance the capabilities of our Autonomous Contract Lawyer. If you're interested in contributing, please follow the guidelines outlined in CONTRIBUTING.md.
 
-## Acknowledgements
-We would like to acknowledge the contributions of the open-source community and the developers of the technologies used in this project.
