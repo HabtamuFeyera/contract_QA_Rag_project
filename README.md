@@ -1,50 +1,33 @@
-# Contract Q&A RAG Project
+# Autonomous Contract Lawyer with RAG Technology
 
-Welcome to the Contract Q&A RAG Project! This project aims to develop a Retrieval-Augmented Generation (RAG) system for Contract Question & Answer (Q&A) tasks. The system will leverage hybrid LLM technology to provide high-precision legal expertise in contract analysis and interpretation.
+Welcome to the Autonomous Contract Lawyer project! This project aims to revolutionize contract management by developing an innovative system that enables natural language interactions with contracts. Powered by Retrieval-Augmented Generation (RAG) technology, our system empowers users to ask questions, seek clarifications, and extract key information effortlessly.
 
-## Overview
+## Business Objective
 
-Lizzy AI is an early-stage Israeli startup focused on developing the next-generation contract AI. The ultimate goal is to create a fully autonomous artificial contract lawyer capable of drafting, reviewing, and negotiating contracts independently. This project marks the initial step towards achieving this goal by building a powerful contract assistant through a RAG system.
+Our mission is to build, evaluate, and enhance a Retrieval-Augmented Generation (RAG) system tailored specifically for Contract Q&A scenarios. By integrating advanced language models with external knowledge bases pertinent to contract law, we aim to deliver accurate and contextually relevant responses to user queries.
 
 ## Project Structure
 
-The project follows a structured organization to facilitate development, experimentation, and collaboration. Here's a brief overview of the directory structure:
-
-- **data/**: Contains raw, processed, and labeled contract data, as well as pre-trained word embeddings.
-- **models/**: Stores trained retriever and generator models.
-- **src/**: Houses source code for data preprocessing, model training, fine-tuning, and evaluation.
-- **utils/**: Includes utility functions for text processing and evaluation metrics.
-- **config/**: Stores configuration files for model hyperparameters and training settings.
-- **notebooks/**: Jupyter notebooks for data exploration, model training, and evaluation.
+- **backend**: Contains backend logic for handling user queries, integrating external knowledge bases, and managing contract-related information.
+- **data**: Stores contract documents, datasets, and other relevant data.
+- **frontend**: Contains frontend components for natural language interaction with contracts.
+- **notebooks**: Includes Jupyter notebooks for data analysis, model training, and experimentation.
+- **utils**: Houses utility functions and modules used across different parts of the project.
+- **main.py**: Main entry point of the application.
+- **README.md**: This file, providing an overview of the project.
 - **requirements.txt**: Lists Python dependencies required for the project.
-- **README.md**: You are here! Detailed documentation about the project.
 
 ## Getting Started
+To get started with the Autonomous Contract Lawyer, follow these steps:
+1. Clone this repository:
+   ```bash
+   git clone https://github.com/HabtamuFeyera/contract_QA_Rag_project.git
+2. Install the dependencies listed in `requirements.txt`.
+3. Run `main.py` to start the application.
+4. Interact with the system through the provided interface.
 
-To get started with the project, follow these steps:
+## Demo
+Check out the [demo](https://medium.com/@habtamufeyer02/contract-advisor-rag-towards-building-a-high-precision-legal-expert-llms-app-b0826b10058f) of our Autonomous Contract Lawyer system in action!
 
-1. Set up a Python environment and install dependencies listed in `requirements.txt`.
-2. Populate the `data/` directory with raw contract documents.
-3. Preprocess the data using scripts in `src/` and store processed data in `data/processed_data/`.
-4. Train the retriever and generator models using scripts in `src/`.
-5. Fine-tune the RAG model for Contract Q&A tasks.
-6. Evaluate the performance of the RAG system using evaluation scripts in `src/`.
-7. Iterate on the model and data based on evaluation results to improve performance.
-8. Refer to Jupyter notebooks in `notebooks/` for detailed examples and experimentation.
 
-## Contributing
 
-Contributions to the project are welcome! If you'd like to contribute, please follow these guidelines:
-
-- Fork the repository and create a new branch for your feature or bug fix.
-- Make your changes and submit a pull request detailing the modifications.
-- Ensure that your code follows the project's coding style and conventions.
-- Write descriptive commit messages and documentation for your changes.
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
-
-## Acknowledgments
-
-Special thanks to Lizzy AI for initiating this project and providing guidance throughout its development.
