@@ -1,8 +1,6 @@
-# src/models/chat_model.py
-
-from langchain_community.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
+from langchain_openai import ChatOpenAI
 
 class ChatModel:
     def __init__(self, openai_api_key):
@@ -19,10 +17,14 @@ class ChatModel:
         Returns:
             ConversationalRetrievalChain: The chat QA chain.
         """
-        memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
-        chat_qa = ConversationalRetrievalChain.from_llm(
-            self.chat_model,
-            vect_db.as_retriever(),
-            memory=memory
-        )
-        return chat_qa
+        try:
+            memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+            chat_qa = ConversationalRetrievalChain.from_llm(
+                self.chat_model,
+                vect_db.as_retriever(),  # Ensure vect_db provides the correct retriever
+                memory=memory
+            )
+            return chat_qa
+        except Exception as e:
+            print(f"Error in creating conversational chain: {str(e)}")
+            raise

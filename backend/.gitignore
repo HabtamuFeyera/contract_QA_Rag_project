@@ -1,0 +1,14 @@
+# .gitignore
+
+# Ignore Python cache files
+__pycache__/
+*.pyc
+
+# Ignore Node.js dependencies (if present)
+node_modules/
+
+# Ignore environment files
+.env
+
+# Ignore OS-specific files
+.DS_Store

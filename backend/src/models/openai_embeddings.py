@@ -1,6 +1,4 @@
-# src/core/openai_embeddings.py
-
-from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain_openai import OpenAIEmbeddings
 
 class OpenAIEmbeddingsWrapper:
     def __init__(self, openai_api_key):
@@ -17,4 +15,5 @@ class OpenAIEmbeddingsWrapper:
         Returns:
             list: The generated embeddings.
         """
-        return self.embeddings.encode(document)
+        # If using embed_documents, make sure to pass the document as a list
+        return self.embeddings.embed_documents([document])[0]
