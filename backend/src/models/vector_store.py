@@ -31,7 +31,7 @@ class VectorStore:
         self, 
         gemini_api_key: Optional[str] = None, 
         persist_directory: Optional[str] = None,
-        collection_name: str = "legal_contracts",
+        collection_name: str = "legal_contracts_gemini",
         **kwargs
     ):
         api_key = (

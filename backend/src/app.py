@@ -6,6 +6,7 @@ Exposes endpoints for contract querying, streaming token generation, PDF ingesti
 import logging
 import json
 import asyncio
+from pathlib import Path
 from typing import List, Optional, Dict, Any
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from fastapi.responses import StreamingResponse
