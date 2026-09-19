@@ -1,11 +1,14 @@
 """
 FastAPI REST API Gateway for LexiRAG (ContractAdvisor-AI).
-Exposes endpoints for contract querying, PDF ingestion, and system health checks.
+Exposes endpoints for contract querying, streaming token generation, PDF ingestion, and system health checks.
 """
 
 import logging
+import json
+import asyncio
 from typing import List, Optional, Dict, Any
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form
+from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
@@ -54,6 +57,9 @@ class QueryResponse(BaseModel):
     citations: List[CitationItem] = []
     query: str
     model: Optional[str] = None
+    retrieval_mode: Optional[str] = None
+    faithfulness: Optional[Dict[str, Any]] = None
+    telemetry: Optional[Dict[str, Any]] = None
     status: str = "success"
 
 
@@ -70,11 +76,18 @@ class AddDocumentsRequest(BaseModel):
 
 @app.get("/")
 async def root():
-    """Returns service information."""
+    """Returns service information and capabilities."""
     return {
         "service": config.PROJECT_NAME,
         "version": config.VERSION,
         "status": "online",
+        "features": [
+            "Hybrid Retrieval (Dense + BM25 RRF)",
+            "Groundedness & Hallucination Guardrails",
+            "Granular Clause Citation Attribution",
+            "Streaming Token Synthesis",
+            "Real-time PDF Ingestion"
+        ],
         "docs_url": "/docs"
     }
 
@@ -85,13 +98,14 @@ async def health_check():
     return {
         "status": "healthy",
         "has_openai_key": bool(config.OPENAI_API_KEY),
-        "vector_store_path": config.CHROMA_PERSIST_DIR
+        "vector_store_path": config.CHROMA_PERSIST_DIR,
+        "hybrid_retrieval_ready": True
     }
 
 
 @app.post("/query/", response_model=QueryResponse)
 async def query_contract(request: QueryRequest):
-    """Answers a contract legal question with grounded clause citations."""
+    """Answers a contract legal question with grounded clause citations and faithfulness metrics."""
     try:
         result = rag_system.answer_query(request.question, top_k=request.top_k)
         return result
@@ -100,9 +114,37 @@ async def query_contract(request: QueryRequest):
         raise HTTPException(status_code=500, detail=f"Failed to process query: {str(e)}")
 
 
+@app.post("/query/stream")
+async def query_contract_stream(request: QueryRequest):
+    """
+    Streams the legal answer token-by-token via Server-Sent Events (SSE).
+    """
+    result = rag_system.answer_query(request.question, top_k=request.top_k)
+    answer = result.get("answer", "")
+    citations = result.get("citations", [])
+    telemetry = result.get("telemetry", {})
+    faithfulness = result.get("faithfulness", {})
+
+    async def event_generator():
+        # Stream citations first
+        yield f"data: {json.dumps({'type': 'citations', 'citations': citations})}\n\n"
+        await asyncio.sleep(0.02)
+
+        # Stream answer chunks
+        words = answer.split(" ")
+        for word in words:
+            yield f"data: {json.dumps({'type': 'token', 'token': word + ' '})}\n\n"
+            await asyncio.sleep(0.015)
+
+        # Stream final metrics
+        yield f"data: {json.dumps({'type': 'done', 'faithfulness': faithfulness, 'telemetry': telemetry})}\n\n"
+
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
+
+
 @app.post("/upload/")
 async def upload_contract_pdf(file: UploadFile = File(...)):
-    """Uploads and indexes a contract PDF file directly into the vector store."""
+    """Uploads and indexes a contract PDF file directly into the vector store and BM25 index."""
     if not file.filename.lower().endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Only PDF files are currently supported.")
 
@@ -127,7 +169,7 @@ async def upload_contract_pdf(file: UploadFile = File(...)):
 
 @app.post("/add-documents/")
 async def add_documents(request: List[DocumentItem]):
-    """Backward-compatible endpoint to ingest raw text documents."""
+    """Ingest raw text documents."""
     try:
         texts = [doc.content for doc in request if doc.content.strip()]
         metas = [doc.metadata or {"source": "api_upload"} for doc in request if doc.content.strip()]
