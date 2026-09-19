@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv/
+
+# Environment Variables
+.env
+.env.local
+
+# Data & Database artifacts
+data/
+backend/data/
+*.sqlite3
+chroma_db/
+
+# Node / Frontend
+frontend/node_modules/
+frontend/build/
+.npm
+npm-debug.log*
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE & OS
+.DS_Store
+.vscode/
+.idea/
