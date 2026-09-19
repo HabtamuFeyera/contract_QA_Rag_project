@@ -24,21 +24,27 @@ class RAGSystem:
 
     def __init__(
         self, 
-        openai_api_key: Optional[str] = None,
+        gemini_api_key: Optional[str] = None,
         persist_directory: Optional[str] = None,
-        model_name: Optional[str] = None
+        model_name: Optional[str] = None,
+        **kwargs
     ):
-        self.api_key = openai_api_key or config.OPENAI_API_KEY
+        self.api_key = (
+            gemini_api_key 
+            or kwargs.get("openai_api_key") 
+            or config.GEMINI_API_KEY 
+            or config.OPENAI_API_KEY
+        )
         self.persist_directory = persist_directory or config.CHROMA_PERSIST_DIR
         self.model_name = model_name or config.DEFAULT_MODEL
 
-        logger.info(f"Initializing LexiRAG System with model: {self.model_name}")
+        logger.info(f"Initializing LexiRAG System with Gemini model: {self.model_name}")
         self.vector_store = VectorStore(
-            openai_api_key=self.api_key,
+            gemini_api_key=self.api_key,
             persist_directory=self.persist_directory
         )
         self.chat_model = ChatModel(
-            openai_api_key=self.api_key,
+            gemini_api_key=self.api_key,
             model_name=self.model_name,
             temperature=config.TEMPERATURE
         )

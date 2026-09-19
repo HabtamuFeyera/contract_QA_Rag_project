@@ -97,7 +97,9 @@ async def health_check():
     """Healthcheck endpoint for monitoring and container probes."""
     return {
         "status": "healthy",
-        "has_openai_key": bool(config.OPENAI_API_KEY),
+        "has_gemini_key": bool(config.GEMINI_API_KEY),
+        "has_api_key": bool(config.GEMINI_API_KEY or config.OPENAI_API_KEY),
+        "model": config.DEFAULT_MODEL,
         "vector_store_path": config.CHROMA_PERSIST_DIR,
         "hybrid_retrieval_ready": True
     }

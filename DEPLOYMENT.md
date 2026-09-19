@@ -31,7 +31,8 @@ Render will read `render.yaml` and create two services:
 2. `lexirag-frontend` (Free Static Site)
 
 Under **Environment Variables**:
-- `OPENAI_API_KEY`: Enter your OpenAI API key (`sk-...`). If left blank, the system will use local hybrid BM25 extraction with offline simulated responses.
+- `GEMINI_API_KEY`: Enter your free Google Gemini API key from [Google AI Studio](https://aistudio.google.com/app/apikey).
+- `DEFAULT_MODEL`: Set to `gemini-1.5-flash` (fast, capable, free tier with generous limits).
 
 ### Step 3: Deploy
 - Click **Apply**.
@@ -40,7 +41,7 @@ Under **Environment Variables**:
 
 ---
 
-## ⚡ Option 2: Vercel (Frontend) + Render (Backend)
+## ⚡ Option 2: Vercel (Frontend) + Render (Backend) (Fastest UI)
 
 For ultra-low latency frontend serving without any sleep periods, deploy the frontend on Vercel and the backend on Render.
 
@@ -56,7 +57,8 @@ For ultra-low latency frontend serving without any sleep periods, deploy the fro
    - **Plan**: `Free`
 4. Add Environment Variables:
    - `PYTHON_VERSION` = `3.11.9`
-   - `OPENAI_API_KEY` = `your-key-here`
+   - `GEMINI_API_KEY` = `your-free-gemini-api-key` (Get free from [aistudio.google.com](https://aistudio.google.com/app/apikey))
+   - `DEFAULT_MODEL` = `gemini-1.5-flash`
 5. Click **Create Web Service**. Note your backend URL (e.g., `https://lexirag-backend.onrender.com`).
 
 ### Part B: Deploy Frontend on Vercel
@@ -87,7 +89,7 @@ Hugging Face Spaces provides 16GB RAM and 2 vCPUs completely free, which is idea
      git push hf main
      ```
 7. In the Space **Settings** -> **Repository Secrets**:
-   - Add Secret: `OPENAI_API_KEY` = `sk-...`
+   - Add Secret: `GEMINI_API_KEY` = `your-free-gemini-key`
 8. The multi-stage [`Dockerfile`](./Dockerfile) will automatically compile the React frontend, package the FastAPI backend, and host both seamlessly on port `7860`.
 
 ---

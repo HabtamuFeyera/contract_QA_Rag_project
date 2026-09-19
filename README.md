@@ -4,9 +4,10 @@
 ### **Autonomous Legal Contract Intelligence & Clause Verification Engine**
 
 [![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![Google Gemini](https://img.shields.io/badge/Google_Gemini-4285F4?style=for-the-badge&logo=googlebard&logoColor=white)](https://ai.google.dev/)
 [![LangChain](https://img.shields.io/badge/LangChain-1C3C3C?style=for-the-badge&logo=langchain&logoColor=white)](https://www.langchain.com)
 [![ChromaDB](https://img.shields.io/badge/ChromaDB-FF5722?style=for-the-badge&logo=circle&logoColor=white)](https://www.trychroma.com)
-[![BM25](https://img.shields.io/badge/Sparse_Search-BM25-blueviolet?style=for-the-badge)](https://en.wikipedia.org/wiki/Okapi_BM25)
+[![BM25](https://img.shields.io/badge/Sparse_Search-BM25-0284c7?style=for-the-badge)](https://en.wikipedia.org/wiki/Okapi_BM25)
 [![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com)
 [![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)](.github/workflows/ci.yml)
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/HabtamuFeyera/contract_QA_Rag_project)
@@ -164,7 +165,7 @@ cd contract_QA_Rag_project
 
 # 2. Configure environment
 cp .env.example .env
-# Set OPENAI_API_KEY in .env
+# Set GEMINI_API_KEY in .env (100% free via https://aistudio.google.com)
 
 # 3. Start multi-container stack
 docker-compose up --build

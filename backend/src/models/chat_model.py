@@ -30,8 +30,17 @@ Question:
 Answer (Clear, structured, with clause citations):"""
 
 
+def get_chat_gemini_class():
+    """Dynamically imports ChatGoogleGenerativeAI from langchain_google_genai."""
+    try:
+        from langchain_google_genai import ChatGoogleGenerativeAI
+        return ChatGoogleGenerativeAI
+    except ImportError:
+        return None
+
+
 def get_chat_openai_class():
-    """Dynamically imports ChatOpenAI from langchain_openai or langchain_community."""
+    """Dynamically imports ChatOpenAI from langchain_openai or langchain_community as fallback."""
     try:
         from langchain_openai import ChatOpenAI
         return ChatOpenAI
@@ -44,36 +53,62 @@ def get_chat_openai_class():
 
 
 class ChatModel:
-    """Manages chat model invocation with domain-specific legal prompt engineering."""
+    """Manages chat model invocation with domain-specific legal prompt engineering using Google Gemini."""
 
     def __init__(
         self, 
-        openai_api_key: Optional[str] = None, 
-        model_name: str = "gpt-4-turbo", 
-        temperature: float = 0.0
+        gemini_api_key: Optional[str] = None, 
+        model_name: Optional[str] = None, 
+        temperature: float = 0.0,
+        **kwargs
     ):
-        self.api_key = openai_api_key or ""
-        self.model_name = model_name
+        import os
+        self.api_key = (
+            gemini_api_key 
+            or kwargs.get("google_api_key") 
+            or kwargs.get("openai_api_key") 
+            or os.getenv("GEMINI_API_KEY") 
+            or os.getenv("GOOGLE_API_KEY") 
+            or os.getenv("OPENAI_API_KEY") 
+            or ""
+        )
+        self.model_name = model_name or os.getenv("DEFAULT_MODEL", "gemini-1.5-flash")
         self.temperature = temperature
         self._llm = None
         self._init_llm()
 
     def _init_llm(self):
-        """Initializes the chat model with fallback for testing."""
+        """Initializes Google Gemini chat model with fallback for testing."""
         if self.api_key:
-            ChatClass = get_chat_openai_class()
-            if ChatClass is not None:
+            # 1. Primary: Google Gemini Chat Model
+            GeminiChatClass = get_chat_gemini_class()
+            if GeminiChatClass is not None:
                 try:
-                    self._llm = ChatClass(
-                        openai_api_key=self.api_key,
-                        model_name=self.model_name,
+                    self._llm = GeminiChatClass(
+                        model=self.model_name,
+                        google_api_key=self.api_key,
                         temperature=self.temperature
                     )
-                    logger.info(f"Initialized ChatOpenAI with model {self.model_name}")
+                    logger.info(f"Initialized ChatGoogleGenerativeAI with model {self.model_name}")
                     return
                 except Exception as e:
-                    logger.warning(f"Failed to initialize ChatOpenAI: {e}. Falling back to FakeListChatModel.")
+                    logger.warning(f"Failed to initialize ChatGoogleGenerativeAI: {e}.")
 
+            # 2. Secondary fallback if key is OpenAI
+            OpenAIChatClass = get_chat_openai_class()
+            if OpenAIChatClass is not None and self.api_key.startswith("sk-"):
+                try:
+                    self._llm = OpenAIChatClass(
+                        openai_api_key=self.api_key,
+                        model_name="gpt-4-turbo",
+                        temperature=self.temperature
+                    )
+                    logger.info("Initialized fallback ChatOpenAI")
+                    return
+                except Exception as e:
+                    logger.warning(f"Failed to initialize ChatOpenAI: {e}.")
+
+        # 3. Offline / Test Fallback
         from langchain_community.chat_models import FakeListChatModel
         self._llm = FakeListChatModel(
             responses=[

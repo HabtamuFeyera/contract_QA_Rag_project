@@ -19,7 +19,8 @@ class Config:
     PROJECT_NAME: str = "LexiRAG - Autonomous Contract Legal Intelligence"
     VERSION: str = "2.0.0"
     
-    # API Keys
+    # API Keys (Google Gemini primary with legacy OpenAI fallback)
+    GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", os.getenv("GOOGLE_API_KEY", ""))
     OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
 
     # Storage & Persistence Paths
@@ -33,9 +34,10 @@ class Config:
         str(BASE_DIR / "data" / "contracts")
     )
 
-    # LLM Settings
-    DEFAULT_MODEL: str = os.getenv("DEFAULT_MODEL", "gpt-4-turbo")
-    FALLBACK_MODEL: str = os.getenv("FALLBACK_MODEL", "gpt-3.5-turbo")
+    # LLM Settings (Google Gemini)
+    DEFAULT_MODEL: str = os.getenv("DEFAULT_MODEL", "gemini-1.5-flash")
+    FALLBACK_MODEL: str = os.getenv("FALLBACK_MODEL", "gemini-1.5-pro")
+    EMBEDDING_MODEL: str = os.getenv("EMBEDDING_MODEL", "models/text-embedding-004")
     TEMPERATURE: float = float(os.getenv("TEMPERATURE", "0.0"))
     MAX_TOKENS: int = int(os.getenv("MAX_TOKENS", "1500"))
 
@@ -56,9 +58,7 @@ class Config:
     @classmethod
     def validate(cls) -> bool:
         """Validates that critical credentials exist for production runtime."""
-        if not cls.OPENAI_API_KEY:
-            return False
-        return True
+        return bool(cls.GEMINI_API_KEY or cls.OPENAI_API_KEY)
 
     @classmethod
     def ensure_directories(cls):

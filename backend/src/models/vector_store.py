@@ -8,7 +8,8 @@ import os
 from typing import List, Optional, Dict, Any
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from .openai_embeddings import OpenAIEmbeddingsWrapper
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from .gemini_embeddings import GeminiEmbeddingsWrapper
 
 logger = logging.getLogger(__name__)
 
@@ -28,11 +29,19 @@ class VectorStore:
 
     def __init__(
         self, 
-        openai_api_key: Optional[str] = None, 
+        gemini_api_key: Optional[str] = None, 
         persist_directory: Optional[str] = None,
-        collection_name: str = "legal_contracts"
+        collection_name: str = "legal_contracts",
+        **kwargs
     ):
-        self.embeddings_wrapper = OpenAIEmbeddingsWrapper(openai_api_key=openai_api_key)
+        api_key = (
+            gemini_api_key 
+            or kwargs.get("openai_api_key") 
+            or os.getenv("GEMINI_API_KEY") 
+            or os.getenv("GOOGLE_API_KEY") 
+            or os.getenv("OPENAI_API_KEY")
+        )
+        self.embeddings_wrapper = GeminiEmbeddingsWrapper(gemini_api_key=api_key)
         self.persist_directory = persist_directory
         self.collection_name = collection_name
         self._vector_store = None

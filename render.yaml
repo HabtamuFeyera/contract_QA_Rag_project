@@ -22,8 +22,12 @@ services:
         value: production
       - key: RELOAD
         value: "false"
+      - key: DEFAULT_MODEL
+        value: "gemini-1.5-flash"
+      - key: GEMINI_API_KEY
+        sync: false # Free from https://aistudio.google.com
       - key: OPENAI_API_KEY
-        sync: false # Prompts user to enter key in Render dashboard securely
+        sync: false # Optional fallback
 
   # --------------------------------------------------------------------------
   # LexiRAG React Frontend (Free Tier Static Site)
