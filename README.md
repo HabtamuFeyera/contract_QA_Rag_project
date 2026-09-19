@@ -9,6 +9,7 @@
 [![BM25](https://img.shields.io/badge/Sparse_Search-BM25-blueviolet?style=for-the-badge)](https://en.wikipedia.org/wiki/Okapi_BM25)
 [![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com)
 [![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)](.github/workflows/ci.yml)
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/HabtamuFeyera/contract_QA_Rag_project)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
 <br/>
@@ -19,7 +20,7 @@
 
 ---
 
-[**Read the Technical Deep Dive on Medium**](https://medium.com/@habtamufeyer02/contract-advisor-rag-towards-building-a-high-precision-legal-expert-llms-app-b0826b10058f) • [**Architecture**](#-system-architecture) • [**CLI Tool**](#-command-line-interface-cli) • [**Quickstart**](#-quickstart-guide) • [**API Reference**](#-api-endpoints) • [**Evaluation**](#-evaluation--benchmarks)
+[**🚀 Free 1-Click Deploy**](DEPLOYMENT.md) • [**Read on Medium**](https://medium.com/@habtamufeyer02/contract-advisor-rag-towards-building-a-high-precision-legal-expert-llms-app-b0826b10058f) • [**Architecture**](#-system-architecture) • [**CLI Tool**](#-command-line-interface-cli) • [**Quickstart**](#-quickstart-guide) • [**Evaluation**](#-evaluation--benchmarks)
 
 ---
 
@@ -138,9 +139,23 @@ Empirically assessed using `RAGSystemEvaluator` against legal contract test suit
 
 ---
 
-## 🚀 Quickstart Guide
+## 🚀 Quickstart & Deployment
+ 
+### 🌐 1-Click Free Cloud Deployment ($0/month)
 
-### Option 1: Running with Docker Compose (Recommended)
+Deploy the entire LexiRAG full-stack application (FastAPI + React 18) for free with zero infrastructure setup:
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/HabtamuFeyera/contract_QA_Rag_project)
+
+* **Render (1-Click Full-Stack)**: Automated deployment of backend API and frontend SPA via [`render.yaml`](./render.yaml).
+* **Vercel + Render**: Blazing fast edge CDN for the React dashboard with backend on Render.
+* **Hugging Face Spaces**: 16 GB RAM free CPU Space via multi-stage [`Dockerfile`](./Dockerfile).
+
+👉 **[View the Complete Step-by-Step Deployment Guide (DEPLOYMENT.md)](DEPLOYMENT.md)**
+
+---
+
+### Option 1: Running with Docker Compose (Local)
 
 ```bash
 # 1. Clone repository

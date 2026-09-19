@@ -5,7 +5,10 @@ import ChatWorkspace from './components/ChatWorkspace';
 import CitationDrawer from './components/CitationDrawer';
 import './styles/App.css';
 
-const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
+const RAW_BACKEND_URL = process.env.REACT_APP_BACKEND_URL !== undefined 
+  ? process.env.REACT_APP_BACKEND_URL 
+  : (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:8000');
+const API_BASE_URL = RAW_BACKEND_URL.replace(/\/+$/, '');
 
 const App = () => {
   const [messages, setMessages] = useState([

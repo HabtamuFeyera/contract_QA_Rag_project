@@ -182,3 +182,26 @@ async def add_documents(request: List[DocumentItem]):
     except Exception as e:
         logger.error(f"Error adding text documents: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# --------------------------------------------------------------------------
+# Optional Unified Static Files Serving (Single-Container / Space Mode)
+# --------------------------------------------------------------------------
+frontend_build_dir = Path(__file__).resolve().parent.parent.parent / "frontend" / "build"
+if frontend_build_dir.exists() and (frontend_build_dir / "index.html").exists():
+    from fastapi.staticfiles import StaticFiles
+    from fastapi.responses import FileResponse
+
+    static_assets = frontend_build_dir / "static"
+    if static_assets.exists():
+        app.mount("/static", StaticFiles(directory=str(static_assets)), name="static")
+
+    @app.get("/{full_path:path}", include_in_schema=False)
+    async def serve_spa_frontend(full_path: str):
+        api_prefixes = ("query", "upload", "health", "add-documents", "docs", "openapi.json", "redoc")
+        if full_path.startswith(api_prefixes):
+            raise HTTPException(status_code=404, detail="API endpoint not found.")
+        file_candidate = frontend_build_dir / full_path
+        if file_candidate.is_file():
+            return FileResponse(file_candidate)
+        return FileResponse(frontend_build_dir / "index.html")
